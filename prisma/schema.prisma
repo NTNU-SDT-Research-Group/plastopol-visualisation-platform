@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                   Int                    @id @default(autoincrement())
+  email                String                 @unique
+  name                 String?
+  imageWithAnnotations ImageWithAnnotations[]
+}
+
+model ImageWithAnnotations {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  imageUrl    String
+  annotations String?
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    Int?
+}
