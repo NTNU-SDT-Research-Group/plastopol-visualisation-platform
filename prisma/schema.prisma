@@ -18,6 +18,11 @@ model ImageWithAnnotations {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
   imageUrl    String
+  width       Float
+  height      Float
+  type        String
+  scaledHeight Float?
+  scaledWidth Float?
   annotations String?
   author      User?    @relation(fields: [authorId], references: [id])
   authorId    Int?

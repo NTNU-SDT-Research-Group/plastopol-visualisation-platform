@@ -9,24 +9,36 @@ export async function POST(request: NextRequest) {
     // * INFO: Form data is ordered when pushed in single key
     const formData = await request.formData();
 
-    formData.getAll("images").forEach(async (blob) => {
-      const file = blob as File;
+    const annotations = formData.getAll("annotations");
+    const metadata = formData.getAll("metadata");
+
+    formData.getAll("images").forEach(async (blob, idx) => {
+      const file = blob as File & { width: number; height: number };
       const fileName = `${Date.now()}-${file.name}`;
       const path = `upload/${fileName}`;
       const arrayBuffer = await file.arrayBuffer();
 
       fs.writeFileSync(`public/${path}`, Buffer.from(arrayBuffer));
 
+      const imageMetadata = JSON.parse(metadata[idx] as string) as {
+        width: number;
+        height: number;
+        scaledWidth: number | undefined;
+        scaledHeight: number | undefined;
+      };
+
       const createdEntry = await prisma.imageWithAnnotations.create({
         data: {
           imageUrl: path,
+          type: file.type,
+          width: imageMetadata.width,
+          height: imageMetadata.height,
+          scaledWidth: imageMetadata.scaledWidth,
+          scaledHeight: imageMetadata.scaledHeight,
+          annotations: annotations[idx] as string,
         },
       });
-
-      console.log(createdEntry);
     });
-
-    // console.log(JSON.parse(formData.get("annotations") as string));
 
     return NextResponse.json({
       status: 200,
