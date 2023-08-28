@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@deck.gl/react": "^8.9.19",
-    "@observablehq/runtime": "^5.8.1",
+    "@observablehq/runtime": "^5.9.2",
     "@prisma/client": "^4.16.0",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
