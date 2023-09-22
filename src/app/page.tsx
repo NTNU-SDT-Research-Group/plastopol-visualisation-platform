@@ -1,7 +1,9 @@
+import DataMap from "@/components/DataMap";
+
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      Home Page
-    </main>
+    <div className="relative w-full h-full">
+      <DataMap />
+    </div>
   );
 }
