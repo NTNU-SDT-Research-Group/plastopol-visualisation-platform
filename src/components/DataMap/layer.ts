@@ -1,3 +1,4 @@
+import { PostProcessedData, TS_ORIGIN } from "@/lib/utils";
 import { HeatmapLayer } from "@deck.gl/aggregation-layers/typed";
 import { DataFilterExtension } from "@deck.gl/extensions/typed";
 import { LayerProps } from "react-map-gl";
@@ -10,7 +11,8 @@ const dataFilter = new DataFilterExtension({
   filterSize: 1,
   // Enable for higher precision, e.g. 1 second granularity
   // See DataFilterExtension documentation for how to pick precision
-  fp64: false,
+  // fp64: false,
+  countItems: true,
 });
 
 export function renderLayers(props: {
@@ -19,23 +21,59 @@ export function renderLayers(props: {
   filterValue: [number, number];
 }) {
   const { data, settings, filterValue } = props;
+
+  if (!data) {
+    return [];
+  }
+
+  console.log(filterValue);
+
   return [
     new HeatmapLayer({
       data,
       id: "heatmp-layer",
       pickable: false,
-      getPosition: (d) => [d[0], d[1]],
-      getWeight: (d) => d[2],
-      radiusPixels: 30,
-      intensity: 1,
-      threshold: 0.3,
-      getFilterValue: (d: any) => d.timestamp,
-      filterRange: [filterValue[0], filterValue[1]],
-      filterSoftRange: [
-        filterValue[0] * 0.9 + filterValue[1] * 0.1,
-        filterValue[0] * 0.1 + filterValue[1] * 0.9,
+      getPosition: (d) => [d.longitude, d.latitude],
+      getWeight: (d) => parseFloat(d.total),
+      colorRange: [
+        [254, 235, 226],
+        [252, 197, 192],
+        [250, 159, 181],
+        [247, 104, 161],
+        [197, 27, 138],
+        [122, 1, 119],
       ],
-      extensions: [dataFilter],
+      radiusPixels: 30,
+      intensity: 1.8,
+      threshold: 0.3,
+      aggregation: "SUM",
+      // extensions: [dataFilter],
+      // getFilterValue: (d: PostProcessedData) => {
+      //   const value = d.start_date - TS_ORIGIN;
+      //   // console.log(
+      //   //   [
+      //   //     (filterValue[0] - TS_ORIGIN) / 1000000,
+      //   //     (filterValue[1] - TS_ORIGIN) / 1000000,
+      //   //   ],
+      //   //   value / 1000000
+      //   // );
+      //   // if (
+      //   //   value < filterValue[0] - TS_ORIGIN ||
+      //   //   value > filterValue[1] - TS_ORIGIN
+      //   // ) {
+      //   //   console.log("filtering");
+      //   // }
+
+      //   return value;
+      // },
+      // filterRange: [filterValue[0] - TS_ORIGIN, filterValue[1] - TS_ORIGIN],
+      // filterSoftRange: [
+      //   filterValue[0] * 0.9 + filterValue[1] * 0.1,
+      //   filterValue[0] * 0.1 + filterValue[1] * 0.9,
+      // ],
+      // onFilteredItemsChange: ({ count }: { count: number }) => {
+      //   console.log(`Filtered ${count} items`);
+      // },
     }),
   ];
 }

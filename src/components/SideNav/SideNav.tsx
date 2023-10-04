@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Map, BarChart3, LayoutList } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function ButtonDemo() {
   return <Button>Button</Button>;
@@ -16,6 +16,7 @@ type SideNavProps = {
 
 export default function SideNav({ className }: SideNavProps): JSX.Element {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <nav className={cn(className, "flex flex-col h-full shadow-lg")}>
@@ -35,6 +36,9 @@ export default function SideNav({ className }: SideNavProps): JSX.Element {
           className={cn({
             "bg-gray-200": pathname === "/",
           })}
+          onClick={() => {
+            router.push("/");
+          }}
         >
           <Map className="w-6 h-6" />
         </Button>
@@ -53,6 +57,9 @@ export default function SideNav({ className }: SideNavProps): JSX.Element {
           className={cn({
             "bg-gray-200": pathname === "/annotations",
           })}
+          onClick={() => {
+            router.push("/annotations");
+          }}
         >
           <LayoutList className="w-6 h-6" />
         </Button>

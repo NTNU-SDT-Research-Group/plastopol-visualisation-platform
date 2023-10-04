@@ -50,3 +50,23 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const imageWithAnnotations = await prisma.imageWithAnnotations.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json({
+      status: 200,
+      data: imageWithAnnotations,
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { error: `Upload failed - ${err}` },
+      { status: 500 }
+    );
+  }
+}
