@@ -25,6 +25,12 @@ export async function POST(request: NextRequest) {
         height: number;
         scaledWidth: number | undefined;
         scaledHeight: number | undefined;
+        location:
+          | {
+              latitude: number | undefined;
+              longitude: number | undefined;
+            }
+          | undefined;
       };
 
       const createdEntry = await prisma.imageWithAnnotations.create({
@@ -36,6 +42,8 @@ export async function POST(request: NextRequest) {
           scaledWidth: imageMetadata.scaledWidth,
           scaledHeight: imageMetadata.scaledHeight,
           annotations: annotations[idx] as string,
+          longitude: imageMetadata.location?.longitude,
+          latitude: imageMetadata.location?.latitude,
         },
       });
     });
@@ -53,6 +61,24 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (id) {
+      const imageWithAnnotations = await prisma.imageWithAnnotations.findUnique(
+        {
+          where: {
+            id: parseInt(id),
+          },
+        }
+      );
+
+      return NextResponse.json({
+        status: 200,
+        data: imageWithAnnotations,
+      });
+    }
+
     const imageWithAnnotations = await prisma.imageWithAnnotations.findMany({
       orderBy: {
         createdAt: "desc",
