@@ -8,9 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import Slider from "rc-slider";
 
-import "rc-slider/assets/index.css";
 import { DatePicker } from "./DatePicker";
 import { Progress } from "@/components/ui/progress";
 
