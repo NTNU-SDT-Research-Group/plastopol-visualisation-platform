@@ -1,7 +1,7 @@
-import { PostProcessedData, TS_ORIGIN } from "@/lib/utils";
-import { HeatmapLayer } from "@deck.gl/aggregation-layers/typed";
-import { DataFilterExtension } from "@deck.gl/extensions/typed";
 import { LayerProps } from "react-map-gl";
+import { PostProcessedData, TS_ORIGIN } from "@/lib/utils";
+import { ScatterplotLayer } from "@deck.gl/layers/typed";
+import { DataFilterExtension } from "@deck.gl/extensions/typed";
 
 export type Settings = {
   showBuildings: boolean;
@@ -9,71 +9,41 @@ export type Settings = {
 
 const dataFilter = new DataFilterExtension({
   filterSize: 1,
-  // Enable for higher precision, e.g. 1 second granularity
-  // See DataFilterExtension documentation for how to pick precision
-  // fp64: false,
-  countItems: true,
 });
 
 export function renderLayers(props: {
   data?: any;
   settings: Settings;
-  filterValue: [number, number];
+  filterValue: [number, number] | null;
 }) {
   const { data, settings, filterValue } = props;
 
-  if (!data) {
+  if (!data || !filterValue) {
     return [];
   }
 
-  console.log(filterValue);
+  const filterMin = filterValue[0] - TS_ORIGIN;
+  const filterMax = filterValue[1] - TS_ORIGIN;
 
   return [
-    new HeatmapLayer({
+    new ScatterplotLayer({
       data,
-      id: "heatmp-layer",
-      pickable: false,
+      id: "accumulation",
+      radiusScale: 0.01,
+      radiusMinPixels: 1,
+      wrapLongitude: true,
+      opacity: 0.4,
+      pickable: true,
       getPosition: (d) => [d.longitude, d.latitude],
-      getWeight: (d) => parseFloat(d.total),
-      colorRange: [
-        [254, 235, 226],
-        [252, 197, 192],
-        [250, 159, 181],
-        [247, 104, 161],
-        [197, 27, 138],
-        [122, 1, 119],
+      getRadius: (d) => parseFloat(d.total),
+      getFillColor: (d) => [122, 1, 119],
+      extensions: [dataFilter],
+      getFilterValue: (d: PostProcessedData) => d.start_date - TS_ORIGIN,
+      filterRange: [filterMin, filterMax], // filter should never be [infinity, -infinity]
+      filterSoftRange: [
+        filterMin * 0.9 + filterMax * 0.1,
+        filterMin * 0.1 + filterMax * 0.9,
       ],
-      radiusPixels: 30,
-      intensity: 1.8,
-      threshold: 0.3,
-      aggregation: "SUM",
-      // extensions: [dataFilter],
-      // getFilterValue: (d: PostProcessedData) => {
-      //   const value = d.start_date - TS_ORIGIN;
-      //   // console.log(
-      //   //   [
-      //   //     (filterValue[0] - TS_ORIGIN) / 1000000,
-      //   //     (filterValue[1] - TS_ORIGIN) / 1000000,
-      //   //   ],
-      //   //   value / 1000000
-      //   // );
-      //   // if (
-      //   //   value < filterValue[0] - TS_ORIGIN ||
-      //   //   value > filterValue[1] - TS_ORIGIN
-      //   // ) {
-      //   //   console.log("filtering");
-      //   // }
-
-      //   return value;
-      // },
-      // filterRange: [filterValue[0] - TS_ORIGIN, filterValue[1] - TS_ORIGIN],
-      // filterSoftRange: [
-      //   filterValue[0] * 0.9 + filterValue[1] * 0.1,
-      //   filterValue[0] * 0.1 + filterValue[1] * 0.9,
-      // ],
-      // onFilteredItemsChange: ({ count }: { count: number }) => {
-      //   console.log(`Filtered ${count} items`);
-      // },
     }),
   ];
 }

@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     // * INFO: Form data is ordered when pushed in single key
     const formData = await request.formData();
 
-    const annotations = formData.getAll("annotations");
+    const annotations = formData.getAll("annotations") as (string | null)[];
     const metadata = formData.getAll("metadata");
 
     formData.getAll("images").forEach(async (blob, idx) => {
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           height: imageMetadata.height,
           scaledWidth: imageMetadata.scaledWidth,
           scaledHeight: imageMetadata.scaledHeight,
-          annotations: annotations[idx] as string,
+          annotations: annotations[idx],
           longitude: imageMetadata.location?.longitude,
           latitude: imageMetadata.location?.latitude,
         },

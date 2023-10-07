@@ -42,7 +42,7 @@ export default function SideNav({ className }: SideNavProps): JSX.Element {
         >
           <Map className="w-6 h-6" />
         </Button>
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           className={cn({
@@ -50,7 +50,7 @@ export default function SideNav({ className }: SideNavProps): JSX.Element {
           })}
         >
           <BarChart3 className="w-6 h-6" />
-        </Button>
+        </Button> */}
         <Button
           variant="ghost"
           size="icon"

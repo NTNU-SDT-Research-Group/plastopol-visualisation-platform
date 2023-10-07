@@ -33,9 +33,11 @@ export type PostProcessedData = {
   latitude: number;
 };
 
-export function getTimeRange(data: PostProcessedData[]): [number, number] {
-  if (!data) {
-    return [Infinity, -Infinity];
+export function getTimeRange(
+  data: PostProcessedData[]
+): [number, number] | null {
+  if (!data || data.length === 0) {
+    return null;
   }
 
   return data.reduce(
@@ -61,4 +63,8 @@ export function postProcess(data: ResponseData[]): PostProcessedData[] {
     longitude: d.lon,
     latitude: d.lat,
   }));
+}
+
+export function formatDate(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }

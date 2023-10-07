@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 type DatePickerProps = {
-  onChange: (date?: Date) => void;
+  onChange: (date: Date) => void;
   date?: Date;
   title?: string;
 };
@@ -40,7 +40,7 @@ export const DatePicker = ({ onChange, date, title }: DatePickerProps) => {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={onChange}
+          onSelect={(date) => date && onChange(date)}
           initialFocus={false}
         />
       </PopoverContent>
