@@ -36,3 +36,5 @@ next-env.d.ts
 
 /public/upload/*
 /prisma/dev.db
+
+.env
